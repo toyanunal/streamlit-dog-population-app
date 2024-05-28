@@ -43,24 +43,20 @@ The model is based on the following assumptions and parameters, inspired by the 
 ### Model Parameters
 | Name                          | Value                 | Source   |
 |-------------------------------|-----------------------|----------|
-| Weaning Period                | 8 weeks               | AnyLogic |
-| Female Dog Puberty            | 8 months              | AnyLogic |
-| Male Dog Puberty              | 10 months             | AnyLogic |
-| Oestrous Duration             | 9 days                | AnyLogic |
-| Time to New Proestrous        | 7 months              | AnyLogic |
-| Gestation Period              | 63 days               | AnyLogic |
-| Litter Size                   | 6 puppies             | AnyLogic |
+| Initial Dog Population Size   | Adjustable (50 male & 50 female) | Assumption |
+| Birth Interval                | Adjustable (7 months) | AnyLogic |
+| Litter Size                   | Adjustable (6 puppies)| AnyLogic |
+| Female Dog Puberty            | Adjustable (8 months) | AnyLogic |
+| Male Dog Puberty              | Adjustable (10 months)| AnyLogic |
+| Maturity Age                  | Adjustable (12 months)| AnyLogic |
+| Spay Probability              | Adjustable (0.30)     | AnyLogic |
 | Sex Ratio for New Litters     | 2:1 (male:female)     | AnyLogic |
-| Mortality Rate                | 0.33 per year         | AnyLogic |
-| Cost Female Spay              | $40 US                | AnyLogic |
-| Initial Dog Population Size   | 100 (50 male, 50 female) | Custom |
-| Spay Probability              | Adjustable            | Custom |
 
 ## Screenshots
 ### Home page
 ![image](https://github.com/toyanunal/streamlit-dog-population-app/assets/59750131/96965843-bea6-48b9-810d-5564c740160d)
 
 ## References
-* ["Agent-based models to identify and evaluate dog population management strategies"](https://www.anylogic.com/upload/iblock/e11/e11d627ebb120af6a0369ae8d55799fd.pdf) by AnyLogic.
+* [Agent-based models to identify and evaluate dog population management strategies](https://www.anylogic.com/upload/iblock/e11/e11d627ebb120af6a0369ae8d55799fd.pdf) by AnyLogic.
 
 This README provides an overview of your Dog Population Streamlit App, detailing the technologies used, installation steps, usage instructions, and the parameters and assumptions of the model. Additionally, it acknowledges the presentation that inspired the model's assumptions and parameters.
