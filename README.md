@@ -51,6 +51,7 @@ The model is based on the following assumptions and parameters, inspired by the 
 | Maturity Age                  | Adjustable (12 months)| AnyLogic |
 | Spay Probability              | Adjustable (0.30)     | AnyLogic |
 | Sex Ratio for New Litters     | 2:1 (male:female)     | AnyLogic |
+| Mortality Rate                | Adjustable (0.33 per year) | AnyLogic |
 
 ## Screenshots
 ### Home page
