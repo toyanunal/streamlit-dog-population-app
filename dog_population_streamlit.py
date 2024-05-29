@@ -5,14 +5,18 @@ import plotly.graph_objects as go
 import streamlit as st
 
 class FemaleDog(Agent):
-    def __init__(self, unique_id, model, birth_month):
+    def __init__(self, unique_id, model, birth_month, state="Newborn"):
         super().__init__(unique_id, model)
         self.birth_month = birth_month
         self.age = 0
-        self.state = "Newborn"
+        self.state = state
 
     def step(self):
         self.age += 1
+        if self.random.random() < self.model.mortality_rate / 12:  # Monthly mortality rate
+            self.model.schedule.remove(self)
+            return
+
         self.update_state()
 
         if self.state == "Reproductive" and (self.model.schedule.time - self.birth_month) % self.model.birth_interval == 0:
@@ -39,14 +43,18 @@ class FemaleDog(Agent):
             self.model.schedule.add(puppy_male)
 
 class MaleDog(Agent):
-    def __init__(self, unique_id, model, birth_month):
+    def __init__(self, unique_id, model, birth_month, state="Newborn"):
         super().__init__(unique_id, model)
         self.birth_month = birth_month
         self.age = 0
-        self.state = "Newborn"
+        self.state = state
 
     def step(self):
         self.age += 1
+        if self.random.random() < self.model.mortality_rate / 12:  # Monthly mortality rate
+            self.model.schedule.remove(self)
+            return
+
         self.update_state()
 
     def update_state(self):
@@ -56,7 +64,7 @@ class MaleDog(Agent):
             self.state = "Reproductive"
 
 class DogPopulationModel(Model):
-    def __init__(self, initial_population, birth_interval, litter_size, female_puberty, male_puberty, maturity_age, spay_probability, sex_ratio, max_months):
+    def __init__(self, initial_population, birth_interval, litter_size, female_puberty, male_puberty, maturity_age, spay_probability, sex_ratio, mortality_rate, max_months):
         super().__init__()
         self.schedule = RandomActivation(self)
         self.current_id = 0
@@ -67,20 +75,44 @@ class DogPopulationModel(Model):
         self.maturity_age = maturity_age
         self.spay_probability = spay_probability
         self.sex_ratio = sex_ratio
+        self.mortality_rate = mortality_rate
         self.max_months = max_months
 
-        # Create initial dog population (split equally between males and females)
-        for _ in range(initial_population // 2):
-            dog_female = FemaleDog(self.next_id(), self, 0)
-            self.schedule.add(dog_female)
-        for _ in range(initial_population // 2):
-            dog_male = MaleDog(self.next_id(), self, 0)
-            self.schedule.add(dog_male)
+        # Create initial dog population
+        self.create_initial_population(initial_population)
 
         self.datacollector = DataCollector(
             model_reporters={"Total Population": lambda m: m.schedule.get_agent_count(),
                              "Female Population": lambda m: sum(isinstance(agent, FemaleDog) for agent in m.schedule.agents)}
         )
+
+    def create_initial_population(self, initial_population):
+        num_females = initial_population // 2
+        num_males = initial_population - num_females
+
+        female_structure = {
+            "Newborn": int(0.1 * num_females),
+            "Early Age": int(0.1 * num_females),
+            "Reproductive": int(0.1 * num_females),
+            "Pregnant": int(0.1 * num_females),
+            "Non-Reproductive": int(0.6 * num_females)
+        }
+
+        male_structure = {
+            "Newborn": int(0.1 * num_males),
+            "Early Age": int(0.1 * num_males),
+            "Reproductive": int(0.8 * num_males)
+        }
+
+        for state, count in female_structure.items():
+            for _ in range(count):
+                dog_female = FemaleDog(self.next_id(), self, 0, state)
+                self.schedule.add(dog_female)
+
+        for state, count in male_structure.items():
+            for _ in range(count):
+                dog_male = MaleDog(self.next_id(), self, 0, state)
+                self.schedule.add(dog_male)
 
     def step(self):
         self.datacollector.collect(self)
@@ -105,14 +137,15 @@ def get_user_input():
     maturity_age = st.sidebar.slider("Maturity Age (months)", min_value=1, max_value=24, value=12, step=1)
     spay_probability = st.sidebar.slider("Spay Probability", min_value=0.0, max_value=1.0, value=0.3, step=0.01)
     sex_ratio = st.sidebar.slider("Sex Ratio (Males/Females)", min_value=0.10, max_value=10.0, value=2.0, step=0.1)
+    mortality_rate = st.sidebar.slider("Mortality Rate (per year)", min_value=0.0, max_value=1.0, value=0.33, step=0.01)
     max_months = st.sidebar.slider("Max Months to Simulate", min_value=1, max_value=120, value=60, step=1)
-    return initial_population, birth_interval, litter_size, female_puberty, male_puberty, maturity_age, spay_probability, sex_ratio, max_months
+    return initial_population, birth_interval, litter_size, female_puberty, male_puberty, maturity_age, spay_probability, sex_ratio, mortality_rate, max_months
 
 # Get user input
-initial_population, birth_interval, litter_size, female_puberty, male_puberty, maturity_age, spay_probability, sex_ratio, max_months = get_user_input()
+initial_population, birth_interval, litter_size, female_puberty, male_puberty, maturity_age, spay_probability, sex_ratio, mortality_rate, max_months = get_user_input()
 
 # Initialize the model
-model = DogPopulationModel(initial_population, birth_interval, litter_size, female_puberty, male_puberty, maturity_age, spay_probability, sex_ratio, max_months)
+model = DogPopulationModel(initial_population, birth_interval, litter_size, female_puberty, male_puberty, maturity_age, spay_probability, sex_ratio, mortality_rate, max_months)
 model.run_model()
 
 # Collect data
