@@ -3,7 +3,6 @@ from mesa.time import RandomActivation
 from mesa.datacollection import DataCollector
 import plotly.graph_objects as go
 import streamlit as st
-import random
 
 class FemaleDog(Agent):
     def __init__(self, unique_id, model, birth_month, state="Newborn"):
@@ -11,7 +10,6 @@ class FemaleDog(Agent):
         self.birth_month = birth_month
         self.age = 0
         self.state = state
-        self.next_reproduction_month = birth_month + self.model.birth_interval + random.randint(0, self.model.birth_interval)
 
     def step(self):
         self.age += 1
@@ -21,9 +19,8 @@ class FemaleDog(Agent):
 
         self.update_state()
 
-        if self.state == "Reproductive" and self.model.schedule.time == self.next_reproduction_month:
+        if self.state == "Reproductive" and (self.model.schedule.time - self.birth_month) % self.model.birth_interval == 0:
             self.reproduce()
-            self.next_reproduction_month += self.model.birth_interval
 
     def update_state(self):
         if self.state == "Newborn" and self.age >= self.model.female_puberty:
@@ -138,7 +135,7 @@ def get_user_input():
     female_puberty = st.sidebar.slider("Female Dog Puberty (months)", min_value=1, max_value=24, value=8, step=1)
     male_puberty = st.sidebar.slider("Male Dog Puberty (months)", min_value=1, max_value=24, value=10, step=1)
     maturity_age = st.sidebar.slider("Maturity Age (months)", min_value=1, max_value=24, value=12, step=1)
-    spay_probability = st.sidebar.slider("Spay Probability", min_value=0.0, max_value=1.0, value=0.25, step=0.01)
+    spay_probability = st.sidebar.slider("Spay Probability", min_value=0.0, max_value=1.0, value=0.3, step=0.01)
     sex_ratio = st.sidebar.slider("Sex Ratio (Males/Females)", min_value=0.10, max_value=10.0, value=2.0, step=0.1)
     mortality_rate = st.sidebar.slider("Mortality Rate (per year)", min_value=0.0, max_value=1.0, value=0.33, step=0.01)
     max_months = st.sidebar.slider("Max Months to Simulate", min_value=1, max_value=120, value=60, step=1)
