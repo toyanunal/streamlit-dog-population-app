@@ -55,7 +55,7 @@ The model is based on the following assumptions and parameters, inspired by the 
 
 ## Screenshots
 ### Home page
-![image](https://github.com/toyanunal/streamlit-dog-population-app/assets/59750131/96965843-bea6-48b9-810d-5564c740160d)
+![image](https://github.com/toyanunal/streamlit-dog-population-app/assets/59750131/7e56d8d7-5bba-4071-976e-526b653e7b73)
 
 ## References
 * [Agent-based models to identify and evaluate dog population management strategies](https://www.anylogic.com/upload/iblock/e11/e11d627ebb120af6a0369ae8d55799fd.pdf) by AnyLogic.
